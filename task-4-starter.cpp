@@ -1,5 +1,5 @@
 #include <string>
-#include<iostream>
+#include <iostream>
 #include <utility>
 
 class Item {
@@ -61,14 +61,25 @@ public:
 
     }
 
+    ~Inventory() {
+        for (int i = 0; i < item_count; i++) {
+            delete items[i];
+        }
+    }
+
     void add_item() {
+        if (item_count >= 20) {
+            std::cout << "\nInventory full. Cannot add more items.\n";
+            return;
+        }
+
         std::string name;
         int quantity;
         float price;
 
         std::cin.ignore();
         std::cout << "\nEnter item name: ";
-        std::cin >> name;
+        std::getline(std::cin, name);  // Better for names with spaces
         std::cout << "Enter quantity: ";
         std::cin >> quantity;
         std::cout << "Enter price: ";
@@ -82,7 +93,7 @@ public:
         std::string item_to_check;
         std::cin.ignore();
         std::cout << "\nEnter item name: ";
-        std::cin >> item_to_check;
+        std::getline(std::cin, item_to_check);
 
         for (int i = 0; i < item_count; i++) {
             if (items[i]->is_match(item_to_check)) {
@@ -90,43 +101,42 @@ public:
                 return;
             }
         }
-        std::cout << "\nThis item is not in your Inventory";
+        std::cout << "\nThis item is not in your inventory.\n";
     }
 
     void remove_item(int item_index) {
-	int input_quantity;
-	Item *item = items[item_index];
-	std::cout << "\nEnter number of items to sell: ";
-	std::cin >> input_quantity;
-	
-	int quantity = item->get_quantity();
-	if (input_quantity <= quantity) {
-	    float price = item->get_price();
-	    float money_earned = price * input_quantity;
-	    item->set_quantity(quantity - input_quantity);
-	    std::cout << "\nItems sold";
-	    std::cout << "\nMoney received: " << money_earned;
-	    total_money += money_earned;
-	    
-	    // If quantity is now zero, remove the item from inventory
-	    if (item->get_quantity() == 0) {
-		std::cout << "\nItem quantity is zero, removing item from inventory.";
-		delete item; // Free memory
-		
-		// Shift all items after the removed one to the left
-		for (int i = item_index; i < item_count - 1; i++) { 
-		     items[i] = items[i + 1];
-		}
-		
-		items[item_count - 1] = nullptr; // Set the last item to nullptr after shifting
-		item_count--; // Decrease the item count
-	    }
-	
-	} else {
-	     std::cout << "\nCannot sell more items than you have.";
-	}
-    }
+        int input_quantity;
+        Item *item = items[item_index];
+        std::cout << "\nEnter number of items to sell: ";
+        std::cin >> input_quantity;
 
+        int quantity = item->get_quantity();
+        if (input_quantity <= quantity) {
+            float price = item->get_price();
+            float money_earned = price * input_quantity;
+            item->set_quantity(quantity - input_quantity);
+            std::cout << "\nItems sold";
+            std::cout << "\nMoney received: " << money_earned;
+            total_money += money_earned;
+
+            // If quantity is now zero, remove the item from inventory
+            if (item->get_quantity() == 0) {
+                std::cout << "\nItem quantity is zero, removing item from inventory.";
+                delete item; // Free memory
+
+                // Shift all items after the removed one to the left
+                for (int i = item_index; i < item_count - 1; i++) {
+                    items[i] = items[i + 1];
+                }
+
+                items[item_count - 1] = nullptr; // Set the last item to nullptr after shifting
+                item_count--; // Decrease the item count
+            }
+
+        } else {
+            std::cout << "\nCannot sell more items than you have.";
+        }
+    }
 
     void list_items() {
         if (item_count == 0) {
@@ -141,7 +151,7 @@ public:
     }
 };
 
-// no need to modify anything here
+// No need to modify anything here
 int main() {
     int choice;
     Inventory inventory_system;
@@ -180,3 +190,4 @@ int main() {
         }
     }
 }
+
